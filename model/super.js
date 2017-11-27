@@ -1,55 +1,65 @@
 'use strict'
 
 const SqlBricks = require('sql-bricks')
+const _ = require('lodash')
 const dbHelper = require('../util/db/helper')
-const helper = require('../util/helper')
-const async = require('async')
-const modelHelper = require('./helper')
 
 class SuperModel {
   constructor() {
-    this.client = null
     this.order = 'createdAt desc'
   }
 
-  create(client, info, cb) {
-    if(!this._isClient(client)) {
-      cb = info
-      info = client
-      client = null
-    }
+  create(data, cb) {
+    let currTime = new Date().getTime();
+    data.createdAt = currTime;
+    data.updatedAt = currTime;
+    dbHelper.getClient((err, client) => {
+      if(err || !client) return cb('cannot get db client')
 
-    if(client) {
-      this._create(client, info, cb)
-    } else {
-      let returnData = null
+      client.insert(this.name, data).row((err, data) => {
+        if(err) {
+          cb(err)
+          client.release()
+          return
+        }
 
-      modelHelper.transQuery((client, transCb) => {
-        this._create(client, info, (err, data) => {
-          returnData = data
-          transCb(err)
+        client.select().from(this.name).where({id: data.insertId}).row((err, data) => {
+          cb(err, data)
+
+          client.release()
         })
-      }, (err) => {
-        cb(err, returnData)
-      })
-    }
+      });
+    })
   }
 
-  _create(client, info, cb) {
-    let self = this
+  createAll(infoList, cb) {
+    let currTime = new Date().getTime()
 
-    let currTime = helper.getDatetimp()
-    info.createdAt = currTime
-    info.updatedAt = currTime
+    infoList.forEach((data) => {
+      data.createdAt = currTime
+      data.updatedAt = currTime
+    })
 
-    // console.log(self.name, info)
-    client.insert(self.name, info).row((err, data) => {
-      if(err) return cb(err)
-      let id = data.insertId
+    dbHelper.getClient((err, client) => {
+      if(err || !client) return cb('cannot get db client')
 
-      client.select().from(self.name).where({ id }).row((err, data) => {
-        // console.log(info, data)
-        cb(err, data)
+      client.insert(this.name, infoList).rows((err, result) => {
+        if(err) {
+          cb(err)
+          client.release()
+          return
+        }
+
+        let minId = result.insertId;
+        let maxId = result.insertId + result.affectedRows - 1;
+
+        let cond = SqlBricks.between('id', minId, maxId)
+        client.select().from(this.name).where(cond).rows((err, data) => {
+          console.log(err, data)
+          cb(err, data)
+
+          client.release()
+        })
       })
     })
   }
@@ -62,14 +72,28 @@ class SuperModel {
     }
 
     dbHelper.getClient((err, client) => {
-      if(err) return cb(err)
+      if(err || !client) return cb('cannot get db client')
 
-      let query = client.select(columnStr).from(this.name).where({ id })
-      // console.log(query.clone().toString())
-      query.row((err, data) => {
-        client.release()
-
+      client.select(columnStr).from(this.name).where({ id }).row((err, data) => {
         cb(err, data)
+
+        client.release()
+      })
+    })
+  }
+
+  findOne(cond, cb) {
+    dbHelper.getClient((err, client) => {
+      if(err || !client) return cb('cannot get db client')
+
+      let query = client.select().from(this.name).where(cond).limit(1)
+
+      if(this.order) query.orderBy(this.order)
+
+      query.row((err, data) => {
+        cb(err, data)
+
+        client.release()
       })
     })
   }
@@ -78,14 +102,14 @@ class SuperModel {
     if(idList.length === 0) return cb(null, [])
 
     dbHelper.getClient((err, client) => {
-      if(err) return cb(err)
+      if(err || !client) return cb('cannot get db client')
 
       let query = client.select().from(this.name).where(SqlBricks.in('id', idList))
       // console.log(query.clone().toString())
       query.rows((err, data) => {
-        client.release()
-
         cb(err, data)
+
+        client.release()
       })
     })
   }
@@ -102,9 +126,8 @@ class SuperModel {
       columnStr += `, ${options.otherColumns.join(',')}`
     }
 
-
     dbHelper.getClient((err, client) => {
-      if(err) return cb(err)
+      if(err || !client) return cb('cannot get db client')
 
       let query = client.select(columnStr).from(this.name)
       dbHelper.getJoinQuery(query, options.where)
@@ -116,112 +139,122 @@ class SuperModel {
 
       // console.log(query.clone().toString())
       query.rows((err, data) => {
-        client.release()
-
         cb(err, data)
+
+        client.release()
       })
     })
   }
 
-  findOne(cond, cb) {
+  updateById(id, data, cb) {
+    data.updatedAt = new Date().getTime()
+
     dbHelper.getClient((err, client) => {
-      if(err) return cb(err)
+      if(err || !client) return cb('cannot get db client')
 
-      let query = client.select().from(this.name).where(cond).limit(1)
+      client.update(this.name, data).where({ id }).run((err) => {
+        if(err) {
+          cb(err)
+          client.release()
+          return
+        }
 
-      if(this.order) query.orderBy(this.order)
-
-      query.row((err, data) => {
-        client.release()
-
-        cb(err, data)
-      })
-    })
-  }
-
-  updateById(client, id, newInfo, cb) {
-    if(!this._isClient(client)) {
-      cb = newInfo
-      newInfo = id
-      id = client
-      client = null
-    }
-
-    if(client) {
-      this._updateById(client, id, newInfo, cb)
-    } else {
-      let returnData = null
-
-      modelHelper.transQuery((client, transCb) => {
-        this._updateById(client, id, newInfo, (err, data) => {
-          returnData = data
-          transCb(err)
-        })
-      }, (err) => {
-        cb(err, returnData)
-      })
-    }
-  }
-
-  _updateById(client, id, newInfo, cb) {
-    let self = this
-
-    let currTime = helper.getDatetimp()
-    newInfo.updatedAt = currTime
-
-    client.select().from(this.name).where({ id }).row((err, data) => {
-      if(err) return cb(err)
-      if(!data) return cb(null, null)
-
-      client.update(self.name, newInfo).where({ id }).run((err) => {
-        if(err) return cb(err)
-
-        client.select().from(self.name).where({ id }).row((err, data) => {
+        client.select().from(this.name).where({ id }).row((err, data) => {
           cb(err, data)
+
+          client.release()
         })
       })
     })
   }
 
-  removeById(client, id, cb) {
-    if(!this._isClient(client)) {
-      cb = id
-      id = client
-      client = null
-    }
+  update(cond, newInfo, cb) {
+    newInfo.updatedAt = new Date().getTime()
 
-    if(client) {
-      this._removeById(client, id, cb)
-    } else {
-      let returnData = null
+    dbHelper.getClient((err, client) => {
+      if(err || !client) return cb('cannot get db client')
 
-      modelHelper.transQuery((client, transCb) => {
-        this._removeById(client, id, (err, data) => {
-          returnData = data
-          transCb(err)
+      client.select('id').from(this.name).where(cond).rows((err, data) => {
+        if(err) {
+          cb(err)
+          client.release()
+          return
+        }
+
+        if(!data || data.length === 0) {
+          cb(null, null)
+          client.release()
+          return
+        }
+
+        let idList = _.map(data, 'id')
+        let query = client.update(this.name, newInfo).where(cond)
+        query.rows((err) => {
+          if(err) {
+            cb(err)
+            client.release()
+            return
+          }
+
+          client.select().from(this.name).where(SqlBricks.in('id', idList)).rows((err, data) => {
+            cb(err, data)
+
+            client.release()
+          })
         })
-      }, (err) => {
-        cb(err, returnData)
       })
-    }
+    })
   }
 
-  _removeById(client, id, cb) {
-    let self = this
+  removeById(id, cb) {
+    dbHelper.getClient((err, client) => {
+      if(err || !client) return cb('cannot get db client')
 
-    client.select().from(this.name).where({ id }).row((err, data) => {
-      if(err) return cb(err)
-      if(!data || data.length === 0) return cb(null, null)
+      client.select().from(this.name).where({ id }).row((err, data) => {
+        if(err) {
+          cb(err)
+          client.release()
+          return
+        }
 
-      client.delete().from(self.name).where({ id }).run((err) => {
-        cb(err, data)
+        if(!data || data.length === 0) {
+          cb(null, null)
+          client.release()
+          return
+        }
+
+        client.delete().from(this.name).where({ id }).run((err) => {
+          cb(err, data)
+
+          client.release()
+        })
+      })
+    })
+  }
+
+  remove(cond, cb) {
+    dbHelper.getClient((err, client) => {
+      if(err || !client) return cb('cannot get db client')
+
+      client.select().from(this.name).where(cond).rows((err, data) => {
+        if(err) {
+          cb(err)
+          client.release()
+          return
+        }
+
+        client.delete().from(this.name).where(cond).run((err) => {
+          cb(err, data)
+
+          client.release()
+        })
       })
     })
   }
 
   count(where, cb) {
     dbHelper.getClient((err, client) => {
-      if(err) return cb(err)
+      if(err || !client) return cb('cannot get db client')
 
       let query = client.select('count(*) as count').from(this.name)
       if(where instanceof Array) {
@@ -233,9 +266,9 @@ class SuperModel {
       }
       // console.log(query.clone().toString())
       query.row((err, result) => {
-        client.release()
-
         cb(err, result ? parseInt(result.count) : 0)
+
+        client.release()
       })
     })
   }
@@ -251,7 +284,7 @@ class SuperModel {
     }
 
     dbHelper.getClient((err, client) => {
-      if(err) return cb(err)
+      if(err || !client) return cb('cannot get db client')
 
       client
         .select(`${columns.join(', ')}, count(*) as count`)
@@ -259,15 +292,11 @@ class SuperModel {
         .where(cond)
         .groupBy(columns)
         .run((err, data) => {
-          client.release()
-
           cb(err, data)
+
+          client.release()
         })
     })
-  }
-
-  _isClient(client) {
-    return (typeof client.query === 'function') && (typeof client.select === 'function')
   }
 }
 

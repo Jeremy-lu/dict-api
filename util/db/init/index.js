@@ -50,7 +50,19 @@ const resetDb = (dbName, cb) => {
         console.log(`initialized`)
         done(err)
       })
-    }
+    },
+
+    (done) => {
+      dbHelper.getClient((err, client) => {
+        if(err) return done(err)
+
+        const defaultData = require('./default')
+        defaultData(client, (err) => {
+          console.log('add default data')
+          done(err)
+        })
+      })
+    },
   ], (err) => {
     console.log(`finished!\n`)
     cb(err)

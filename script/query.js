@@ -1,10 +1,9 @@
 'use strict';
 
-// process.env.DEMO_BANK_ENV = 'test';
 require('../util/db/helper').initPool()
 
-let model = require('../model/user.js')
+let model = require('../model/word.js')
 
-model.find({where: {}}, (err, data) => {
+model.createAll([{name: 1, viviId: 1}, {name: 2, viviId: 2}], (err, data) => {
   console.log(err, data)
 })

@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser')
 const cors = require('cors')
 
 var app = express();
+var server = require('http').Server(app);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true, limit: '500mb' }));
@@ -46,4 +47,4 @@ app.use(require('./util/error-handler'));
 
 require('./util/db/helper').initPool()
 
-module.exports = app
+module.exports = { app, server };
