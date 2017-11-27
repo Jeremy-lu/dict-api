@@ -1,0 +1,26 @@
+{
+  "name": "Express-Mysql",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "express": "~4.14.0",
+    "body-parser": "~1.15.2",
+    "cookie-parser": "~1.4.3",
+    "express-session": "^1.14.0",
+    "cors": "^2.7.1",
+    "morgan": "~1.7.0",
+    "mysql": "^2.12.0",
+    "sql-bricks": "^2.0.1",
+    "async": "^2.0.1",
+    "lodash": "^4.14.2",
+    "debug": "^3.0.0"
+  },
+
+  "devDependencies": {
+    "chai": "^3.2.0",
+    "chai-http": "^1.0.0"
+  }
+}

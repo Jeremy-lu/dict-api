@@ -1,0 +1,4 @@
+--reporter min
+--ui bdd
+--timeout 20000
+--recursive
