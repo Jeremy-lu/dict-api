@@ -31,7 +31,7 @@ schema.image = {
   columns: [
     { name: 'url', type: 'text' },
     { name: 'desc', type: 'text' },
-    { name: 'wordId', type: 'text' },
+    { name: 'wordId', type: 'int' },
     { name: 'order', type: 'int' },
   ]
 }

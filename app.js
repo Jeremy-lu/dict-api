@@ -5,7 +5,7 @@ const logger = require('morgan')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
-const syncController = require('./controller/sync')
+const xiaoSyncController = require('./controller/sync/xiao')
 
 var app = express();
 var server = require('http').Server(app);
@@ -48,6 +48,6 @@ app.use(require('./util/error-handler'));
 
 require('./util/db/helper').initPool()
 
-// syncController.start(true)
+// xiaoSyncController.start(true)
 
 module.exports = { app, server };

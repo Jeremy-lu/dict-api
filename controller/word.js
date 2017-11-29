@@ -23,7 +23,7 @@ class WordController extends SuperController {
   }
 
   _appendImageList(item, cb) {
-    imageModel.find({ wordId: item.id }, (err, list) => {
+    imageModel.find({ where: { wordId: item.id } }, (err, list) => {
       item.imageList = list || []
       cb()
     })

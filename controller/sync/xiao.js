@@ -1,18 +1,18 @@
 'use strict';
 
-const wordModel = require('../model/word')
-const imageModel = require('../model/image')
+const wordModel = require('../../model/word')
+const imageModel = require('../../model/image')
+const syncHelper = require('../../util/sync-helper')
 const SqlBricks = require('sql-bricks')
 const async = require('async')
 const _ = require('lodash')
-const syncHelper = require('../util/sync-helper')
 require('colors')
 
-let parallelRunNum = 1
+let parallelRunNum = 3
 let maxAwaitNum = 100
 let minAwaitNum = 20
 
-class WordSync {
+class XiaoSync {
   constructor() {
     this.runningItems = {}
     this.awaitList = []
@@ -53,7 +53,7 @@ class WordSync {
     this.runningItems[item.id] = item
     this.currRunningNum += 1
 
-    // console.log('starting sync word ' + item.name)
+    console.log('starting sync word ' + item.name)
     this.syncOne(item, (err) => {
       console.log(item.name, err ? err.toString().red : '✓ '.green)
 
@@ -135,4 +135,4 @@ class WordSync {
   }
 }
 
-module.exports = new WordSync()
+module.exports = new XiaoSync()
