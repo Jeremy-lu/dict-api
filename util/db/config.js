@@ -1,6 +1,6 @@
 'use strict'
 
-let baseDbName = 'dic'
+let baseDbName = 'dict'
 let dbName = process.env.FRAMEWORK_EXPRESS_ENV === 'test' ? `${baseDbName}_test` : baseDbName
 
 module.exports = {

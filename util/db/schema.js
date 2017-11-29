@@ -1,6 +1,6 @@
-'use strict';
+'use strict'
 
-var schema = {};
+var schema = {}
 
 schema.user = {
   name: 'user',
@@ -12,14 +12,28 @@ schema.user = {
     { name: 'profession', type: 'text' },
     { name: 'address', type: 'text' },
   ]
-};
+}
 
 schema.word = {
   name: 'word',
   columns: [
     { name: 'name', type: 'text' },
-    { name: 'viviId', type: 'text' }
+    { name: 'viviId', type: 'text' },
+    { name: 'xiaoId', type: 'text' },
+    { name: 'shuo', type: 'text' },
+    { name: 'otherExplain', type: 'text' },
+    { name: 'status', type: 'text' },
   ]
-};
+}
 
-module.exports = schema;
+schema.image = {
+  name: 'image',
+  columns: [
+    { name: 'url', type: 'text' },
+    { name: 'desc', type: 'text' },
+    { name: 'wordId', type: 'text' },
+    { name: 'order', type: 'int' },
+  ]
+}
+
+module.exports = schema

@@ -33,6 +33,8 @@ class SuperModel {
   }
 
   createAll(infoList, cb) {
+    if(!infoList || infoList.length === 0) return cb(null, [])
+
     let currTime = new Date().getTime()
 
     infoList.forEach((data) => {
@@ -55,7 +57,6 @@ class SuperModel {
 
         let cond = SqlBricks.between('id', minId, maxId)
         client.select().from(this.name).where(cond).rows((err, data) => {
-          console.log(err, data)
           cb(err, data)
 
           client.release()

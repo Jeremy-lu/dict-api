@@ -5,6 +5,7 @@ const logger = require('morgan')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
+const syncController = require('./controller/sync')
 
 var app = express();
 var server = require('http').Server(app);
@@ -46,5 +47,7 @@ app.use('/words', require('./router/word'));
 app.use(require('./util/error-handler'));
 
 require('./util/db/helper').initPool()
+
+// syncController.start(true)
 
 module.exports = { app, server };
