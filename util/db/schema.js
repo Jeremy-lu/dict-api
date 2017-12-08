@@ -19,10 +19,11 @@ schema.word = {
   columns: [
     { name: 'name', type: 'text' },
     { name: 'viviId', type: 'text' },
+    { name: 'viviInfo', type: 'text' },
     { name: 'xiaoId', type: 'text' },
-    { name: 'shuo', type: 'text' },
-    { name: 'otherExplain', type: 'text' },
-    { name: 'status', type: 'text' },
+    { name: 'xiaoInfo', type: 'text' },
+    { name: 'viviSyncStatus', type: 'text' },
+    { name: 'xiaoSyncStatus', type: 'text' },
   ]
 }
 

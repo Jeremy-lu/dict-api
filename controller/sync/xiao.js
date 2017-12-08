@@ -23,7 +23,7 @@ class XiaoSync {
 
   start(isInit) {
     if(isInit) {
-      wordModel.update({status: 'syncing'}, {status: 'sync'}, (err) => {
+      wordModel.update({xiaoSyncStatus: 'syncing'}, {xiaoSyncStatus: 'sync'}, (err) => {
         if(err) console.log('start word sync job err: ', err)
 
         this.supplyAwait()
@@ -92,27 +92,27 @@ class XiaoSync {
   }
 
   getSyncList(num, cb) {
-    wordModel.find({where: {status: 'sync'}, limit: num || 100}, (err, data) => {
+    wordModel.find({where: {xiaoSyncStatus: 'sync'}, limit: num || 100}, (err, data) => {
       if(err) return cb(err)
       if(data.length === 0) return cb(null, data)
 
       let idList = _.map(data, 'id')
-      wordModel.update(SqlBricks.in('id', idList), { status: 'syncing' }, (err) => {
+      wordModel.update(SqlBricks.in('id', idList), { xiaoSyncStatus: 'syncing' }, (err) => {
         cb(err, data)
       })
     })
   }
 
   syncOne(word, cb) {
-    let xiaoId = null
+    let updateInfo = { xiaoSyncStatus: 'finished' }
 
     async.waterfall([
       // get image list
       (done) => {
-        syncHelper.getWordImageList(word.name, (err, result) => {
+        syncHelper.getXiaoInfo(word.name, (err, result) => {
           if(err) return done(err)
 
-          xiaoId = result.xiaoId
+          _.merge(updateInfo, _.pick(result, ['xiaoId', 'shuo', 'otherExplain']))
           done(null, result.imageList)
         })
       },
@@ -128,7 +128,7 @@ class XiaoSync {
         })
       }
     ], (err) => {
-      wordModel.updateById(word.id, {xiaoId, status: 'finished'}, () => {
+      wordModel.updateById(word.id, updateInfo, () => {
         cb(err)
       })
     })

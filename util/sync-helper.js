@@ -37,7 +37,7 @@ module.exports = {
     }])
   },
 
-  getWordImageList(word, cb) {
+  getXiaoInfo(word, cb) {
     let url = 'http://xiaoxue.iis.sinica.edu.tw/yanbian/PageResult/PageResult'
     let formData = {
       'ZiOrder': '',
@@ -58,7 +58,7 @@ module.exports = {
       let otherExplain = null
       let imageList = []
 
-      let resultCountMatch = body.match(/共搜尋到(\d)字/)
+      let resultCountMatch = body.match(/共搜尋到(\d+)字/)
       if(resultCountMatch) resultCount = resultCountMatch[1]
 
       if(resultCount === 0) return cb('not find')
@@ -95,9 +95,37 @@ module.exports = {
 
       cb(err, { xiaoId, shuo, otherExplain, imageList })
     })
+  },
+
+  getViviInfo(word, cb) {
+    let uri = 'http://www.vividict.com/WordInfo.aspx?id=' + word.viviId
+
+    c.queue([{
+      uri: uri,
+      retries: 1,
+      retryTimeout: 5000,
+      callback: (err, res, done) => {
+        if(err) return cb(err)
+
+        let $ = res.$
+        console.log(uri, res.body)
+
+        let viviInfo = {
+          //TODO add pinyin attr
+          pinyin: null,
+          evolveImgUrl: $('#contant_2 img').attr('src'),
+          explain: $('#contant_3 .contant').html(),
+          clue: $('#contant_4 img').attr('src'),
+          detail: $('#contant_5 .contant').html(),
+        }
+
+        done()
+        cb(null, viviInfo)
+      }
+    }])
   }
 }
-//
-// module.exports.getWordImageList('苇', (err, result) => {
-//   console.log(err, result)
-// })
+
+module.exports.getViviInfo({ name: '汉', viviId: '2260' }, (err, result) => {
+  console.log(err, result)
+})
