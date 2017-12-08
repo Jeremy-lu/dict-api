@@ -19,7 +19,8 @@
     "crawler": "^1.0.4",
     "request": "^2.79.0",
     "colors": "*",
-    "debug": "^3.0.0"
+    "debug": "^3.0.0",
+    "cheerio": "*"
   },
 
   "devDependencies": {

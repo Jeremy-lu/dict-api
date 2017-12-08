@@ -18,6 +18,7 @@ schema.word = {
   name: 'word',
   columns: [
     { name: 'name', type: 'text' },
+    { name: 'pinyin', type: 'text' },
     { name: 'viviId', type: 'text' },
     { name: 'viviInfo', type: 'text' },
     { name: 'xiaoId', type: 'text' },

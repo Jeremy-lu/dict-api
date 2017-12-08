@@ -17,6 +17,7 @@ app.use(cookieParser());
 // set cross domain
 var whitelist = [
   'http://localhost:8080',
+  'http://test.com',
 ];
 var corsOptions = {
   origin(origin, callback) {
