@@ -6,8 +6,10 @@ const attrConfigs = {
   xiaoId: { type: 'string' },
   viviInfo: { type: 'string' },
   xiaoInfo: { type: 'string' },
+  uncleInfo: { type: 'string' },
   xiaoSyncStatus: { type: 'string' },
   viviSyncStatus: { type: 'string' },
+  uncleSyncStatus: { type: 'string' },
 };
 
 module.exports = require('./helper').generate(attrConfigs);

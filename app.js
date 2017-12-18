@@ -5,7 +5,9 @@ const logger = require('morgan')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
+const uncleSyncController = require('./controller/sync/uncle')
 const viviSyncController = require('./controller/sync/vivi')
+const xiaoSyncController = require('./controller/sync/xiao')
 
 var app = express();
 var server = require('http').Server(app);
@@ -49,6 +51,8 @@ app.use(require('./util/error-handler'));
 
 require('./util/db/helper').initPool()
 
+uncleSyncController.start(true)
+xiaoSyncController.start(true)
 viviSyncController.start(true)
 
 module.exports = { app, server };

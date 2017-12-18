@@ -9,6 +9,7 @@ module.exports = (client, cb) => {
   data.forEach((item) => {
     item.xiaoSyncStatus = 'sync'
     item.viviSyncStatus = 'sync'
+    item.uncleSyncStatus = 'sync'
   })
 
   client.insert('word', data).run(cb)

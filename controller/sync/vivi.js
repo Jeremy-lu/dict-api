@@ -3,7 +3,6 @@
 const wordModel = require('../../model/word')
 const syncHelper = require('../../util/sync-helper')
 const SqlBricks = require('sql-bricks')
-const async = require('async')
 const _ = require('lodash')
 require('colors')
 
@@ -105,17 +104,11 @@ class ViviSync {
   syncOne(word, cb) {
     let updateInfo = { viviSyncStatus: 'finished' }
 
-    async.waterfall([
-      // get image list
-      (done) => {
-        syncHelper.getViviInfo(word, (err, result) => {
-          if(err) return done(err)
+    syncHelper.getViviInfo(word, (err, result) => {
+      if(err) return cb(err)
 
-          updateInfo.viviInfo = JSON.stringify(result)
-          done()
-        })
-      }
-    ], (err) => {
+      updateInfo.viviInfo = JSON.stringify(result)
+
       wordModel.updateById(word.id, updateInfo, () => {
         cb(err)
       })

@@ -10,7 +10,7 @@ let parallelRunNum = 3
 let maxAwaitNum = 100
 let minAwaitNum = 20
 
-class XiaoSync {
+class UncleSync {
   constructor() {
     this.runningItems = {}
     this.awaitList = []
@@ -21,7 +21,7 @@ class XiaoSync {
 
   start(isInit) {
     if(isInit) {
-      wordModel.update({xiaoSyncStatus: 'syncing'}, {xiaoSyncStatus: 'sync'}, (err) => {
+      wordModel.update({uncleSyncStatus: 'syncing'}, {uncleSyncStatus: 'sync'}, (err) => {
         if(err) console.log('start word sync job err: ', err)
 
         this.supplyAwait()
@@ -90,24 +90,24 @@ class XiaoSync {
   }
 
   getSyncList(num, cb) {
-    wordModel.find({where: {xiaoSyncStatus: 'sync'}, limit: num || 100}, (err, data) => {
+    wordModel.find({where: {uncleSyncStatus: 'sync'}, limit: num || 100}, (err, data) => {
       if(err) return cb(err)
       if(data.length === 0) return cb(null, data)
 
       let idList = _.map(data, 'id')
-      wordModel.update(SqlBricks.in('id', idList), { xiaoSyncStatus: 'syncing' }, (err) => {
+      wordModel.update(SqlBricks.in('id', idList), { uncleSyncStatus: 'syncing' }, (err) => {
         cb(err, data)
       })
     })
   }
 
   syncOne(word, cb) {
-    let updateInfo = { xiaoSyncStatus: 'finished' }
+    let updateInfo = { uncleSyncStatus: 'finished' }
 
-    syncHelper.getXiaoInfo(word, (err, result) => {
+    syncHelper.getUncleInfo(word, (err, result) => {
       if(err) return cb(err)
 
-      updateInfo.xiaoInfo = JSON.stringify(result)
+      updateInfo.uncleInfo = JSON.stringify(result)
 
       wordModel.updateById(word.id, updateInfo, () => {
         cb(err)
@@ -116,4 +116,4 @@ class XiaoSync {
   }
 }
 
-module.exports = new XiaoSync()
+module.exports = new UncleSync()

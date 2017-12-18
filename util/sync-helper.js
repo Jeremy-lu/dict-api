@@ -42,7 +42,7 @@ module.exports = {
     let url = 'http://xiaoxue.iis.sinica.edu.tw/yanbian/PageResult/PageResult'
     let formData = {
       'ZiOrder': '',
-      'EudcFontChar': word,
+      'EudcFontChar': word.name,
       'ImageSize': 36,
       'X-Requested-With': 'XMLHttpRequest'
     }
@@ -57,7 +57,7 @@ module.exports = {
       let xiaoId = null
       let shuo = null
       let otherExplain = null
-      let imageList = []
+      let imgList = []
 
       let resultCountMatch = body.match(/共搜尋到(\d+)字/)
       if(resultCountMatch) resultCount = resultCountMatch[1]
@@ -83,8 +83,8 @@ module.exports = {
         let descMatch = tdEl.match(/<br \/>(.*)<br/)
 
         if(urlMatch) {
-          imageList.push({
-            url: urlMatch[1],
+          imgList.push({
+            url: 'http://xiaoxue.iis.sinica.edu.tw' + urlMatch[1],
             desc: descMatch ? descMatch[1] : '',
             order: order += 1
           })
@@ -92,9 +92,32 @@ module.exports = {
       })
 
       // remove normal one
-      imageList = imageList.slice(1)
+      imgList = imgList.slice(1)
 
-      cb(err, { xiaoId, shuo, otherExplain, imageList })
+      // append image list
+      let imgListHtml = '<div class="img-list">\n'
+      imgList.forEach((img) => {
+        imgListHtml += '<div class="img-item">\n'
+        imgListHtml += `<img src="${img.url}" />\n`
+        imgListHtml += `<div class="desc">${img.desc}</div>\n`
+        imgListHtml += '</div>\n'
+      })
+      imgListHtml += '</div>\n'
+
+      // append explain
+      let additionalHtml = '<div>\n'
+      if(shuo) {
+        let arr = shuo.split('：')
+        additionalHtml += `<div class="shuowen"><span class="title">说文解字：</span>${arr[1]}</div>\n`
+      }
+      if(otherExplain) {
+        let arr = otherExplain.split('：')
+        additionalHtml += `<div class="origin"><span class="title">${arr[0]}：</span>${arr[1]}</div>\n`
+      }
+
+      additionalHtml += '</div>\n'
+
+      cb(err, { imgList: escape(imgListHtml), additional: escape(additionalHtml) })
     })
   },
 
@@ -149,6 +172,55 @@ module.exports = {
     }])
   },
 
+  getUncleInfo(word, cb) {
+    let uri = 'http://www.chineseetymology.org/CharacterEtymology.aspx?submitButton1=Etymology&characterInput=' + encodeURIComponent(word.name)
+
+    c.queue([{
+      uri: uri,
+      retries: 1,
+      retryTimeout: 5000,
+      callback: (err, res, done) => {
+        if(err) return cb(err)
+
+        let $ = res.$
+
+        let html = ''
+
+        let map = {
+          'seal': { title: '说文解字', id: 'SealImages' },
+          'lst': { title: '六书通', id: 'LstImages' },
+          'bronze': { title: '金文编', id: 'BronzeImages' },
+          'oracle': { title: '甲骨文编', id: 'OracleImages' },
+        }
+
+        for(let key in map) {
+          let value = map[key]
+
+          html += `<div class="${key} part">\n`
+          html += `<div class="title">${value.title}</div>\n`
+          html += `<div class="img-list">\n`
+
+          // add absolute src url for image
+          let imgList = $(`#${value.id} img`)
+
+          for(let i=0; i<imgList.length; i++) {
+            let img = imgList[i]
+            let src = 'http://www.chineseetymology.org' + $(img).attr('src')
+
+            html += '<div class="img-item">\n'
+            html += `<img src="${src}" />\n`
+            html += '</div>\n'
+          }
+
+          html += '</div>\n</div>\n'
+        }
+
+        done()
+        cb(null, { imgList: escape(html) })
+      }
+    }])
+  },
+
   _formatExplain(originWord, text) {
     text = unescape(text.replace(/&#x/g, '%u').replace(/;/g, '').replace(/%uA0/g, ' '))
 
@@ -197,7 +269,7 @@ module.exports = {
   _formatDetail(originWord, text) {
     text = unescape(text.replace(/&#x/g, '%u').replace(/;/g, '').replace(/%uA0/g, ' '))
 
-    let partList = text.split(/①|②|③|④|⑤/)
+    let partList = text.split(/①|②|③|④|⑤|⑥|⑦|⑧|⑨|⑩|⑪|⑫|⑬|⑭|⑮/)
 
     let html = '<div>\n'
 
@@ -221,7 +293,6 @@ module.exports = {
       lineList.forEach((item) => {
         if(!item || !item.trim() || item.indexOf('—') === -1) return
 
-        console.log(item)
         let arr = item.split(/—+/)
         let example = arr[0].trim()
         let source = arr[1].trim()
@@ -241,6 +312,6 @@ module.exports = {
   }
 }
 
-module.exports.getViviInfo({ name: '字', viviId: '1597' }, (err, result) => {
-  console.log(err, result)
-})
+// module.exports.getUncleInfo({ name: '字' }, (err, result) => {
+//   console.log(err, result)
+// })

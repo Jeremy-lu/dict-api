@@ -23,8 +23,11 @@ schema.word = {
     { name: 'viviInfo', type: 'text' },
     { name: 'xiaoId', type: 'text' },
     { name: 'xiaoInfo', type: 'text' },
+    { name: 'uncleId', type: 'text' },
+    { name: 'uncleInfo', type: 'text' },
     { name: 'viviSyncStatus', type: 'text' },
     { name: 'xiaoSyncStatus', type: 'text' },
+    { name: 'uncleSyncStatus', type: 'text' },
   ]
 }
 
