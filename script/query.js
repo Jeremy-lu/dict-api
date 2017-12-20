@@ -4,6 +4,6 @@ require('../util/db/helper').initPool()
 
 const model = require('../model/word.js')
 
-model.find({}, (err, data) => {
-  console.log(err, data)
+model.update({}, { viviSyncStatus: 'sync' }, (err, data) => {
+  console.log(err)
 })

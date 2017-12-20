@@ -254,10 +254,10 @@ module.exports = {
     let shuowen = arr[1] ? arr[1].trim() : ''
 
     return {
-      desc: content,
+      desc: this._formatRichText(content),
       explain: [
-        { title: '造字本意', desc: origin },
-        { title: '说文解字', desc: shuowen },
+        { title: '造字本意', desc: this._formatRichText(origin) },
+        { title: '说文解字', desc: this._formatRichText(shuowen) },
       ]
     }
   },
@@ -300,9 +300,33 @@ module.exports = {
     })
 
     return result
+  },
+
+  _formatRichText(text) {
+    let result = []
+
+    let once = (text) => {
+      let index = text.indexOf('>')
+
+      let currPart = text.slice(0, index)
+      let nextPart = index === -1 ? null : text.slice(index + 1)
+
+      let splitArr = currPart.split(/</)
+      let textStr = splitArr[0]
+      let imgStr = splitArr[1]
+
+      if(textStr) result.push(textStr)
+      if(imgStr) result.push(imgStr.match(/src="(.*)"/)[1])
+
+      if(nextPart) once(nextPart)
+    }
+
+    if(text) once(text)
+
+    return result
   }
 }
 
 // module.exports.getViviInfo({ name: '动', viviId: '1055' }, (err, result) => {
-//   console.log(err, result)
+//   console.log(err, result.explain)
 // })
