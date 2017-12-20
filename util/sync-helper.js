@@ -246,8 +246,7 @@ module.exports = {
     text = text.replace(/造字本义：[^。]*。/g, '')
 
     // 提取出解说内容已经文言文版《说文解字》
-    let arr = text.split(/附*\s*文*言*版*.*解字》：/)
-    // console.log(arr)
+    let arr = text.split(/附[^\/-=。]+》：/)
     let content = arr[0].trim()
     let shuowen = arr[1] ? arr[1].trim() : ''
 
@@ -304,6 +303,6 @@ module.exports = {
   }
 }
 
-// module.exports.getBishunInfo({ name: '兵', zdicLink: '/z/15/js/5175.htm' }, (err, result) => {
+// module.exports.getViviInfo({ name: '畔', viviId: '2232' }, (err, result) => {
 //   console.log(err, result)
 // })

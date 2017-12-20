@@ -32,7 +32,14 @@ class SuperController {
   getById(id, cb) {
     this.model.findById(id, (err, data) => {
       if(err) return cb(err)
-      cb(err, data && this.filter.return(data))
+
+      data = this.filter.return(data)
+
+      if(this.formatOne) {
+        data = this.formatOne(data)
+      }
+
+      cb(null, data)
     })
   }
 
@@ -47,6 +54,13 @@ class SuperController {
       if(err) return cb(err)
 
       data = data.map(this.filter.return)
+
+      if(this.formatOne) {
+        data = data.map((item) => {
+          return this.formatOne(item)
+        })
+      }
+
       cb(null, data)
     })
   }
@@ -67,6 +81,13 @@ class SuperController {
         if(err) return cb(err)
 
         data = data.map(this.filter.return)
+
+        if(this.formatOne) {
+          data = data.map((item) => {
+            return this.formatOne(item)
+          })
+        }
+
         cb(null, data, paginator.createResBody(paginatorBody, total))
       })
     })
