@@ -8,6 +8,7 @@ const cors = require('cors')
 const uncleSyncController = require('./controller/sync/uncle')
 const viviSyncController = require('./controller/sync/vivi')
 const xiaoSyncController = require('./controller/sync/xiao')
+const zdicLinkSyncController = require('./controller/sync/zdic-link')
 
 var app = express();
 var server = require('http').Server(app);
@@ -20,6 +21,7 @@ app.use(cookieParser());
 var whitelist = [
   'http://localhost:8080',
   'http://test.com',
+  'http://www.zdic.net',
 ];
 var corsOptions = {
   origin(origin, callback) {
@@ -45,14 +47,16 @@ app.get('/ping', (req, res) => {
 // config router
 app.use('/users', require('./router/user'));
 app.use('/words', require('./router/word'));
+app.use('/zdic-link', require('./router/zdic-link'));
 
 
 app.use(require('./util/error-handler'));
 
 require('./util/db/helper').initPool()
 
-uncleSyncController.start(true)
-xiaoSyncController.start(true)
-viviSyncController.start(true)
+// uncleSyncController.start(true)
+// xiaoSyncController.start(true)
+// viviSyncController.start(true)
+zdicLinkSyncController.start(true)
 
 module.exports = { app, server };

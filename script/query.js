@@ -2,8 +2,8 @@
 
 require('../util/db/helper').initPool()
 
-let model = require('../model/word.js')
+const model = require('../model/word.js')
 
-model.update({}, {uncleSyncStatus: 'sync'}, (err, data) => {
+model.find({limit: 3}, (err, data) => {
   console.log(err, data)
 })

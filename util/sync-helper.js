@@ -9,7 +9,7 @@ module.exports = {
   getWordList(cb) {
     c.queue([{
       uri: 'http://www.vividict.com/WordList.html',
-      retries: 1,
+      retries: 3,
       retryTimeout: 5000,
       callback: (err, res, done) => {
         if(err) return cb(err)
@@ -29,7 +29,7 @@ module.exports = {
 
           let id = el.attribs.href.split('id=')[1]
 
-          wordList.push({ viviId: id, name: name, status: 'sync' })
+          wordList.push({ viviId: id, name: name })
         }
 
         cb(null, wordList)
@@ -77,7 +77,7 @@ module.exports = {
       })
 
       let tdElMatch = body.match(/￥[^￥]+￥/g) || []
-      let order = -1
+      // let order = -1
       tdElMatch.forEach((tdEl) => {
         let urlMatch = tdEl.match(/<img src="([^>\s]*)"[^>]*\/>/)
         let descMatch = tdEl.match(/<br \/>(.*)<br/)
@@ -86,7 +86,7 @@ module.exports = {
           imgList.push({
             url: 'http://xiaoxue.iis.sinica.edu.tw' + urlMatch[1],
             desc: descMatch ? descMatch[1] : '',
-            order: order += 1
+            // order: order += 1
           })
         }
       })
@@ -94,30 +94,18 @@ module.exports = {
       // remove normal one
       imgList = imgList.slice(1)
 
-      // append image list
-      let imgListHtml = '<div class="img-list">\n'
-      imgList.forEach((img) => {
-        imgListHtml += '<div class="img-item">\n'
-        imgListHtml += `<img src="${img.url}" />\n`
-        imgListHtml += `<div class="desc">${img.desc}</div>\n`
-        imgListHtml += '</div>\n'
-      })
-      imgListHtml += '</div>\n'
-
       // append explain
-      let additionalHtml = '<div>\n'
+      let explain = []
       if(shuo) {
         let arr = shuo.split('：')
-        additionalHtml += `<div class="shuowen"><span class="title">说文解字：</span>${arr[1]}</div>\n`
+        explain.push({ title: '说文解字', desc: arr[1] })
       }
       if(otherExplain) {
         let arr = otherExplain.split('：')
-        additionalHtml += `<div class="origin"><span class="title">${arr[0]}：</span>${arr[1]}</div>\n`
+        explain.push({ title: arr[0], desc: arr[1] })
       }
 
-      additionalHtml += '</div>\n'
-
-      cb(err, { imgList: escape(imgListHtml), additional: escape(additionalHtml) })
+      cb(err, { imgList: imgList, explain: explain })
     })
   },
 
@@ -126,14 +114,14 @@ module.exports = {
 
     c.queue([{
       uri: uri,
-      retries: 1,
+      retries: 3,
       retryTimeout: 5000,
       callback: (err, res, done) => {
         if(err) return cb(err)
 
         let $ = res.$
 
-        // add absolute src url for image
+        // format img src: use absolute path
         let imgList = $('img')
         for(let i=0; i<imgList.length; i++) {
           let img = imgList[i]
@@ -147,6 +135,7 @@ module.exports = {
             $(img).attr('src', 'http://www.vividict.com' + src)
           }
         }
+
         // remove all hardcode style
         let elList = $('*')
         for(let i=0; i<elList.length; i++) {
@@ -159,11 +148,14 @@ module.exports = {
         let explain = $('#contant_3 .contant').html()
         let detail = $('#contant_5 .contant').html()
 
+        let explainFormatResult = this._formatExplain(explain)
+
         let viviInfo = {
           evolveImgUrl: $('#contant_2 img').attr('src'),
-          explain: escape(this._formatExplain(word.name, explain)),
+          desc: explainFormatResult.desc,
+          explain: explainFormatResult.explain,
           clueImgUrl: $('#contant_4 img').attr('src'),
-          detail: escape(this._formatDetail(word.name, detail)),
+          detail: this._formatDetail(detail),
         }
 
         done()
@@ -177,52 +169,46 @@ module.exports = {
 
     c.queue([{
       uri: uri,
-      retries: 1,
+      retries: 3,
       retryTimeout: 5000,
       callback: (err, res, done) => {
         if(err) return cb(err)
 
         let $ = res.$
 
-        let html = ''
+        let result = [
+          { title: '说文解字', id: 'SealImages' },
+          { title: '六书通', id: 'LstImages' },
+          { title: '金文编', id: 'BronzeImages' },
+          { title: '甲骨文编', id: 'OracleImages' },
+        ]
 
-        let map = {
-          'seal': { title: '说文解字', id: 'SealImages' },
-          'lst': { title: '六书通', id: 'LstImages' },
-          'bronze': { title: '金文编', id: 'BronzeImages' },
-          'oracle': { title: '甲骨文编', id: 'OracleImages' },
-        }
-
-        for(let key in map) {
-          let value = map[key]
-
-          html += `<div class="${key} part">\n`
-          html += `<div class="title">${value.title}</div>\n`
-          html += `<div class="img-list">\n`
+        for(let item of result) {
+          let id = item.id
+          delete item.id
+          item.imgList = []
 
           // add absolute src url for image
-          let imgList = $(`#${value.id} img`)
+          let imgElList = $(`#${id} img`)
 
-          for(let i=0; i<imgList.length; i++) {
-            let img = imgList[i]
-            let src = 'http://www.chineseetymology.org' + $(img).attr('src')
+          for(let i=0; i<imgElList.length; i++) {
+            let imgEl = imgElList[i]
+            let src = 'http://www.chineseetymology.org' + $(imgEl).attr('src')
 
-            html += '<div class="img-item">\n'
-            html += `<img src="${src}" />\n`
-            html += '</div>\n'
+            item.imgList.push(src)
           }
-
-          html += '</div>\n</div>\n'
         }
 
         done()
-        cb(null, { imgList: escape(html) })
+        cb(null, result)
       }
     }])
   },
 
-  _formatExplain(originWord, text) {
-    text = unescape(text.replace(/&#x/g, '%u').replace(/;/g, '').replace(/%uA0/g, ' '))
+  _formatExplain(text) {
+    text = unescape(text.replace(/&#x/g, '%u').replace(/;/g, '').replace(/%uA0/g, ' ')).replace('\r\n', '')
+    text = text.replace(/\s+/g, ' ')
+    text = text.replace(/\r\n/g, '')
 
     // 为里面的图片标签增加特殊标识符，以便后期重新整理
     text = text.replace(/<img[^>]*src=\"([^\"]*)\"[^>]*>/g, '<span>￥$1￥</span>')
@@ -233,7 +219,7 @@ module.exports = {
 
     // 去掉白话版《说文解字》
     text = text.replace(/-{5}/g, '')
-    text = text.split(/附\s+白话版.*解字》/)[0]
+    text = text.split(/附*\s*白话版.*解字》/)[0]
 
     // 提取出造字本意
     let origin = null
@@ -244,37 +230,34 @@ module.exports = {
     text = text.replace(/造字本义：[^。]*。/g, '')
 
     // 提取出解说内容已经文言文版《说文解字》
-    let arr = text.split(/附\s+文言版.*解字》：/)
+    let arr = text.split(/附*\s*文*言*版*.*解字》：/)
+    // console.log(arr)
     let content = arr[0].trim()
-    let shuowen = arr[1].trim()
-
-    // 重新拼接解说模块的html内容
-    let html = '<div>\n'
-    html += `<div class="text">${content}</div>\n`
-    html += '<div class="additional">\n'
-    if(origin) {
-      html += `<div class="origin"><span class="title">造字本意：</span>${origin}</div>\n`
-    }
-    html += `<div class="shuowen"><span class="title">说文解字：</span>${shuowen}</div>\n`
-    html += '</div>\n'
-    html += '</div>\n'
+    let shuowen = arr[1] ? arr[1].trim() : ''
 
     // 把图片替换回去
-    html = html.replace(/￥([^￥]*)￥/g, '<img src="$1" />')
+    content = content.replace(/￥([^￥]*)￥/g, '<img src="$1" />')
 
-    // console.log(html)
-    return html
+    return {
+      desc: content,
+      explain: [
+        { title: '造字本意', desc: origin },
+        { title: '说文解字', desc: shuowen },
+      ]
+    }
   },
 
-  _formatDetail(originWord, text) {
+  _formatDetail(text) {
     text = unescape(text.replace(/&#x/g, '%u').replace(/;/g, '').replace(/%uA0/g, ' '))
 
     let partList = text.split(/①|②|③|④|⑤|⑥|⑦|⑧|⑨|⑩|⑪|⑫|⑬|⑭|⑮/)
 
-    let html = '<div>\n'
+    let result = []
 
     // 梳理 每一条词汇解释
     partList.forEach((part) => {
+      let obj = {}
+
       // 只保留text内容，这样就可以清除原本杂乱无章的标签，之后会重新整理html内容
       let $ = cheerio.load(`<div>${part}</div>`)
       part = $($('div')[0]).text().trim()
@@ -284,10 +267,8 @@ module.exports = {
       let lineList = part.split('\n')
       let titleLine = lineList.shift()
 
-      html += '<div class="part">\n'
-
-      html += `<div class="title">${titleLine.split('。')[0].trim()}</div>\n`
-      html += '<div class="example">\n'
+      obj.title = titleLine.split('。')[0].trim()
+      obj.exampleList = []
 
       // 整理每一个示例
       lineList.forEach((item) => {
@@ -297,21 +278,16 @@ module.exports = {
         let example = arr[0].trim()
         let source = arr[1].trim()
 
-        example = example.replace(new RegExp(originWord, 'g'), `<span class="current">${originWord}</span>`)
-        let joinLine = '<div class="join-line"></div>'
-        html += `<div class="example-item">${example}${joinLine}${source}</div>\n`
+        obj.exampleList.push({ example, source })
       })
 
-      html += '</div>\n'
-      html += '</div>\n'
+      result.push(obj)
     })
 
-    html += '</div>\n'
-
-    return html
+    return result
   }
 }
 
-// module.exports.getUncleInfo({ name: '字' }, (err, result) => {
+// module.exports.getViviInfo({ name: '早', viviId: '1982' }, (err, result) => {
 //   console.log(err, result)
 // })

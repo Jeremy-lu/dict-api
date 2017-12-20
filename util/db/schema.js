@@ -19,25 +19,22 @@ schema.word = {
   columns: [
     { name: 'name', type: 'text' },
     { name: 'pinyin', type: 'text' },
+    { name: 'dynamicWrite', type: 'text' },
+    { name: 'strokeOrder', type: 'text' },
     { name: 'viviId', type: 'text' },
     { name: 'viviInfo', type: 'text' },
     { name: 'xiaoId', type: 'text' },
     { name: 'xiaoInfo', type: 'text' },
     { name: 'uncleId', type: 'text' },
     { name: 'uncleInfo', type: 'text' },
+    { name: 'zdicId', type: 'text' },
+    { name: 'zdicInfo', type: 'text' },
+    { name: 'zdicLink', type: 'text' },
     { name: 'viviSyncStatus', type: 'text' },
     { name: 'xiaoSyncStatus', type: 'text' },
     { name: 'uncleSyncStatus', type: 'text' },
-  ]
-}
-
-schema.image = {
-  name: 'image',
-  columns: [
-    { name: 'url', type: 'text' },
-    { name: 'desc', type: 'text' },
-    { name: 'wordId', type: 'int' },
-    { name: 'order', type: 'int' },
+    { name: 'zdicLinkSyncStatus', type: 'text' },
+    { name: 'zdicSyncStatus', type: 'text' },
   ]
 }
 
