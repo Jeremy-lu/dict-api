@@ -233,6 +233,9 @@ module.exports = {
     let $ = cheerio.load(text)
     text = $($('div')[0]).text()
 
+    // 把图片替换回去
+    text = text.replace(/￥([^￥]*)￥/g, '<img src="$1" />')
+
     // 去掉白话版《说文解字》
     text = text.replace(/-{5}/g, '')
     text = text.split(/附*\s*白话版.*解字》/)[0]
@@ -249,9 +252,6 @@ module.exports = {
     let arr = text.split(/附[^\/-=。]+》：/)
     let content = arr[0].trim()
     let shuowen = arr[1] ? arr[1].trim() : ''
-
-    // 把图片替换回去
-    content = content.replace(/￥([^￥]*)￥/g, '<img src="$1" />')
 
     return {
       desc: content,
@@ -303,6 +303,6 @@ module.exports = {
   }
 }
 
-// module.exports.getViviInfo({ name: '畔', viviId: '2232' }, (err, result) => {
+// module.exports.getViviInfo({ name: '动', viviId: '1055' }, (err, result) => {
 //   console.log(err, result)
 // })
