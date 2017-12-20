@@ -19,11 +19,6 @@ class WordController extends SuperController {
       item[part] = JSON.parse(item[part] || '{}')
     })
 
-    if(item.viviInfo) {
-      if(item.viviInfo.desc) item.viviInfo.desc = unescape(item.viviInfo.desc)
-      if(item.viviInfo.explain) item.viviInfo.explain = JSON.parse(unescape(item.viviInfo.explain))
-    }
-
     return item
   }
 }

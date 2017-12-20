@@ -327,6 +327,6 @@ module.exports = {
   }
 }
 
-// module.exports.getViviInfo({ name: '动', viviId: '1055' }, (err, result) => {
-//   console.log(err, result.explain)
+// module.exports.getViviInfo({ name: '黎', viviId: '2737' }, (err, result) => {
+//   console.log(err, result)
 // })

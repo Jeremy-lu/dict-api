@@ -107,10 +107,6 @@ class ViviSync {
     syncHelper.getViviInfo(word, (err, result) => {
       if(err) return cb(err)
 
-      // desc and explain contains html text, so we need escape it
-      result.desc = escape(result.desc)
-      result.explain = escape(JSON.stringify(result.explain))
-
       updateInfo.viviInfo = JSON.stringify(result)
 
       wordModel.updateById(word.id, updateInfo, () => {
