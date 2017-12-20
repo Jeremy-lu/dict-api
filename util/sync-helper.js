@@ -115,7 +115,7 @@ module.exports = {
     c.queue([{
       uri: uri,
       retries: 3,
-      retryTimeout: 5000,
+      retryTimeout: 10000,
       callback: (err, res, done) => {
         if(err) return cb(err)
 
@@ -170,7 +170,7 @@ module.exports = {
     c.queue([{
       uri: uri,
       retries: 3,
-      retryTimeout: 5000,
+      retryTimeout: 15000,
       callback: (err, res, done) => {
         if(err) return cb(err)
 
@@ -201,6 +201,22 @@ module.exports = {
 
         done()
         cb(null, result)
+      }
+    }])
+  },
+
+  getBishunInfo(word, cb) {
+    c.queue([{
+      uri: 'http://bishun.strokeorder.info/mandarin.php?q=' + encodeURI(word.name),
+      retries: 3,
+      retryTimeout: 10000,
+      callback: (err, res, done) => {
+        if(err) return cb(err)
+
+        let match = res.body.match(/<img src="(.*\.gif)" alt="/)
+        cb(null, { dynamicWrite: match ? match[1] : null })
+
+        done()
       }
     }])
   },
@@ -288,6 +304,6 @@ module.exports = {
   }
 }
 
-// module.exports.getViviInfo({ name: '早', viviId: '1982' }, (err, result) => {
+// module.exports.getBishunInfo({ name: '兵', zdicLink: '/z/15/js/5175.htm' }, (err, result) => {
 //   console.log(err, result)
 // })

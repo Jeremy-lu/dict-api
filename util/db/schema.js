@@ -35,6 +35,7 @@ schema.word = {
     { name: 'uncleSyncStatus', type: 'text' },
     { name: 'zdicLinkSyncStatus', type: 'text' },
     { name: 'zdicSyncStatus', type: 'text' },
+    { name: 'bishunSyncStatus', type: 'text' },
   ]
 }
 
