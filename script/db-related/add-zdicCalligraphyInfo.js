@@ -9,6 +9,7 @@ dbHelper.getClient((err, client) => {
     'alter table `word` add column `zdicCalligraphyInfo` text',
     'alter table `word` add column `radical` text, add column `strokeCount` int',
     'alter table `word` add column `zdicCalligraphySyncStatus` text, add column `zdicCalligraphyLink` text',
+    'update `word` set `zdicCalligraphySyncStatus`="sync"',
   ]
 
   let finishedNum = 0
