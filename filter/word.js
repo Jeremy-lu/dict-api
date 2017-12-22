@@ -4,6 +4,8 @@ const attrConfigs = {
   name: { type: 'string', fuzzySearch: true },
   pinyin: { type: 'string', fuzzySearch: true },
   dynamicWrite: { type: 'string' },
+  radical: { type: 'string' },
+  strokeCount: { type: 'string' },
   strokeOrder: { type: 'string' },
   viviId: { type: 'string' },
   viviInfo: { type: 'string' },
