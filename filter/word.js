@@ -14,6 +14,7 @@ const attrConfigs = {
   zdicId: { type: 'string' },
   zdicInfo: { type: 'string' },
   zdicLink: { type: 'string' },
+  zdicCalligraphyInfo: { type: 'string' },
 };
 
 module.exports = require('./helper').generate(attrConfigs);

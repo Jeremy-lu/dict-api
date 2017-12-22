@@ -19,6 +19,8 @@ schema.word = {
   columns: [
     { name: 'name', type: 'text' },
     { name: 'pinyin', type: 'text' },
+    { name: 'radical', type: 'text' },
+    { name: 'strokeCount', type: 'int' },
     { name: 'dynamicWrite', type: 'text' },
     { name: 'strokeOrder', type: 'text' },
     { name: 'viviId', type: 'text' },
@@ -28,13 +30,16 @@ schema.word = {
     { name: 'uncleId', type: 'text' },
     { name: 'uncleInfo', type: 'text' },
     { name: 'zdicId', type: 'text' },
-    { name: 'zdicInfo', type: 'text' },
     { name: 'zdicLink', type: 'text' },
+    { name: 'zdicInfo', type: 'text' },
+    { name: 'zdicCalligraphyLink', type: 'text' },
+    { name: 'zdicCalligraphyInfo', type: 'text' },
     { name: 'viviSyncStatus', type: 'text' },
     { name: 'xiaoSyncStatus', type: 'text' },
     { name: 'uncleSyncStatus', type: 'text' },
     { name: 'zdicLinkSyncStatus', type: 'text' },
     { name: 'zdicSyncStatus', type: 'text' },
+    { name: 'zdicCalligraphySyncStatus', type: 'text' },
     { name: 'bishunSyncStatus', type: 'text' },
   ]
 }

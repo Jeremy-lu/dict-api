@@ -8,6 +8,6 @@ const model = require('../model/word.js')
 //   console.log(err)
 // })
 
-model.find({}, (err, data) => {
+model.findOne({name: '褱'}, (err, data) => {
   console.log(err, data)
 })

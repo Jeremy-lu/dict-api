@@ -3,6 +3,8 @@
 const request = require('request')
 const cheerio = require('cheerio')
 const Crawler = require('crawler')
+const _ = require('lodash')
+const async = require('async')
 let c = new Crawler()
 
 module.exports = {
@@ -221,6 +223,92 @@ module.exports = {
     }])
   },
 
+  getZdicInfo(word, cb) {
+    c.queue([{
+      uri: 'http://www.zdic.net' + word.zdicLink.replace('/js/', '/zy/'),
+      retries: 3,
+      retryTimeout: 10000,
+      callback: (err, res, done) => {
+        if(err) return cb(err)
+
+        let $ = res.$
+
+        let decode = (str) => {
+          return unescape(str.replace(/&#x/g, '%u').replace(/;/g, '').replace(/%uA0/g, ' '))
+        }
+
+        // console.log(res.body)
+        let radical = decode($('.z_it2_jbs a').html())
+        let strokeCount = parseInt($('.z_it2_jzbh a').html())
+        let strokeOrder = decode($('#z_i_t2_bis').html())
+        let zdicCalligraphyLink = $('.hdsf a').attr('href')
+
+        cb(null, { radical, strokeCount, strokeOrder, zdicCalligraphyLink })
+
+        done()
+      }
+    }])
+  },
+
+  getZdicCalligraphyInfo(word, cb) {
+    let result = [
+      { id: 'z', title: '篆', imgList: [] },
+      { id: 'l', title: '隶', imgList: [] },
+      { id: 'k', title: '楷', imgList: [] },
+      { id: 'x', title: '行', imgList: [] },
+      { id: 'c', title: '草', imgList: [] },
+    ]
+
+    if(!word.zdicCalligraphyLink) return cb(null, result)
+
+    async.eachLimit('zlkxc'.split(''), 2, (item, eachDone) => {
+      let uri = word.zdicCalligraphyLink.replace('/ks/', `/${item}s/`)
+
+      c.queue([{
+        uri,
+        retries: 3,
+        retryTimeout: 5000,
+        callback: (err, res, done) => {
+          if(err) { done(); eachDone(err); return }
+
+          let realUriMatch = res.body.match(/gsft\("([^"]*)","([^"]*)"\)/)
+          if(!realUriMatch) { done(); eachDone(); return }
+
+          done()
+
+          let realUri = `http://sf.zdic.net/sftplb/${realUriMatch[1]}/${realUriMatch[2]}.php`
+          c.queue([{
+            uri: realUri,
+            retries: 3,
+            retryTimeout: 5000,
+            callback: (err, res, done) => {
+              if(err) { done(); eachDone(err); return }
+
+              res.body = res.body.toLocaleLowerCase()
+              let $ = cheerio.load(res.body)
+
+              let imgList = []
+              let imgElList = $('img')
+
+              for(let i=0; i<imgElList.length; i++) {
+                let imgEl = imgElList[i]
+
+                imgList.push({ url: imgEl.attribs.src, title: imgEl.attribs.title })
+              }
+
+              _.find(result, { id: item }).imgList = imgList
+
+              done()
+              eachDone()
+            }
+          }])
+        }
+      }])
+    }, () => {
+      cb(null, result)
+    })
+  },
+
   _formatExplain(text) {
     text = unescape(text.replace(/&#x/g, '%u').replace(/;/g, '').replace(/%uA0/g, ' ')).replace('\r\n', '')
     text = text.replace(/\s+/g, ' ')
@@ -327,6 +415,11 @@ module.exports = {
   }
 }
 
-// module.exports.getViviInfo({ name: '黎', viviId: '2737' }, (err, result) => {
+let word = {
+  name: '畔',
+  zdicCalligraphyLink: 'http://sf.zdic.net/sf/ks/0714/34e233b8eeddf2855398b6a4daa16c28.html'
+}
+
+// module.exports.getZdicCalligraphyInfo(word, (err, result) => {
 //   console.log(err, result)
 // })

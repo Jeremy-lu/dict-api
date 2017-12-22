@@ -28,7 +28,3 @@ module.exports = {
     })
   }
 }
-
-module.exports.stats((err, result) => {
-  console.log(err, result)
-})

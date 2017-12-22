@@ -9,6 +9,8 @@ const uncleSyncController = require('./controller/sync/uncle')
 const viviSyncController = require('./controller/sync/vivi')
 const xiaoSyncController = require('./controller/sync/xiao')
 const zdicLinkSyncController = require('./controller/sync/zdic-link')
+const zdicSyncController = require('./controller/sync/zdic')
+const zdicCalligraphySyncController = require('./controller/sync/zdic-calligraphy')
 const bishunSyncController = require('./controller/sync/bishun')
 
 var app = express();
@@ -55,10 +57,12 @@ app.use(require('./util/error-handler'));
 
 require('./util/db/helper').initPool()
 
-uncleSyncController.start(true)
-xiaoSyncController.start(true)
-viviSyncController.start(true)
-zdicLinkSyncController.start(true)
-bishunSyncController.start(true)
+// uncleSyncController.start(true)
+// xiaoSyncController.start(true)
+// viviSyncController.start(true)
+// zdicLinkSyncController.start(true)
+// bishunSyncController.start(true)
+// zdicSyncController.start(true)
+zdicCalligraphySyncController.start(true)
 
 module.exports = { app, server };
