@@ -1,0 +1,20 @@
+[
+  {
+    "name": "刘",
+    "pinyin": "liú",
+    "viviId": null,
+    "zdicId": "5218",
+    "zdicLink": "/z/16/js/5218.htm",
+    "createdAt": 1514284648632,
+    "updatedAt": 1514284648632
+  },
+  {
+    "name": "婷",
+    "pinyin": "tíng",
+    "viviId": null,
+    "zdicId": "5A77",
+    "zdicLink": "/z/18/js/5A77.htm",
+    "createdAt": 1514284648632,
+    "updatedAt": 1514284648632
+  }
+]

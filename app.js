@@ -57,12 +57,12 @@ app.use(require('./util/error-handler'));
 
 require('./util/db/helper').initPool()
 
-// uncleSyncController.start(true)
-// xiaoSyncController.start(true)
-// viviSyncController.start(true)
+uncleSyncController.start(true)
+xiaoSyncController.start(true)
+viviSyncController.start(true)
 // zdicLinkSyncController.start(true)
-// bishunSyncController.start(true)
-// zdicSyncController.start(true)
+bishunSyncController.start(true)
+zdicSyncController.start(true)
 zdicCalligraphySyncController.start(true)
 
 module.exports = { app, server };

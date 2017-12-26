@@ -112,6 +112,8 @@ module.exports = {
   },
 
   getViviInfo(word, cb) {
+    if(!word.viviId) return cb('no valid viviId')
+
     let uri = 'http://www.vividict.com/WordInfo.aspx?id=' + word.viviId
 
     c.queue([{
