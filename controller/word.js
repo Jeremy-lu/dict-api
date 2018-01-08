@@ -19,6 +19,8 @@ class WordController extends SuperController {
     item.uncleInfo = JSON.parse(item.uncleInfo || '[]')
     item.zdicCalligraphyInfo = JSON.parse(item.zdicCalligraphyInfo || '[]')
 
+    item.uncleInfo = item.uncleInfo.reverse()
+
     item.zdicCalligraphyInfo.forEach((item) => {
       item.imgList.forEach((img) => {
         img.url = img.url.replace('zdicsfpic.zdic.net', 'sf.zdic.net')
