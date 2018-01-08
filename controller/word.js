@@ -14,9 +14,15 @@ class WordController extends SuperController {
   formatOne(item) {
     if(!item) return item
 
-    let partList = ['viviInfo', 'xiaoInfo', 'uncleInfo', 'zdicCalligraphyInfo']
-    partList.forEach((part) => {
-      item[part] = JSON.parse(item[part] || '{}')
+    item.viviInfo = JSON.parse(item.viviInfo || '{}')
+    item.xiaoInfo = JSON.parse(item.xiaoInfo || '{}')
+    item.uncleInfo = JSON.parse(item.uncleInfo || '[]')
+    item.zdicCalligraphyInfo = JSON.parse(item.zdicCalligraphyInfo || '[]')
+
+    item.zdicCalligraphyInfo.forEach((item) => {
+      item.imgList.forEach((img) => {
+        img.url = img.url.replace('zdicsfpic.zdic.net', 'sf.zdic.net')
+      })
     })
 
     return item

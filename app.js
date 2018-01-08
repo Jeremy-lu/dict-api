@@ -21,16 +21,17 @@ app.use(bodyParser.urlencoded({ extended: true, limit: '500mb' }));
 app.use(cookieParser());
 
 // set cross domain
-var whitelist = [
-  'http://localhost:8080',
-  'http://test.com',
-  'http://www.zdic.net',
-];
+// var whitelist = [
+//   'http://localhost:8080',
+//   'http://test.com',
+//   'http://www.zdic.net',
+// ];
 var corsOptions = {
-  origin(origin, callback) {
-    let originIsWhitelisted = whitelist.indexOf(origin) !== -1;
-    callback(null, originIsWhitelisted);
-  },
+  origin: '*',
+  // origin(origin, callback) {
+  //   let originIsWhitelisted = whitelist.indexOf(origin) !== -1;
+  //   callback(null, originIsWhitelisted);
+  // },
   credentials: true,
   methods: ['PUT', 'POST', 'GET', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['X-Requested-With', 'Content-Type']
@@ -60,7 +61,7 @@ require('./util/db/helper').initPool()
 uncleSyncController.start(true)
 xiaoSyncController.start(true)
 viviSyncController.start(true)
-// zdicLinkSyncController.start(true)
+zdicLinkSyncController.start(true)
 bishunSyncController.start(true)
 zdicSyncController.start(true)
 zdicCalligraphySyncController.start(true)

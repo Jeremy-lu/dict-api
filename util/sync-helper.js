@@ -423,5 +423,5 @@ let word = {
 }
 
 // module.exports.getZdicCalligraphyInfo(word, (err, result) => {
-//   console.log(err, result)
+//   console.log(err, result[0])
 // })
