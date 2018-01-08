@@ -1,12 +1,11 @@
 'use strict'
 
-// first append jquery
+// 1. first append jquery
 var el = document.createElement('script')
 el.src = 'http://demo.training.testbrother.net/js/jquery.min.js?_1512011634_'
-
 document.body.appendChild(el)
 
-// submit and get next valid word from my own server
+// 2. submit and get next valid word from my own server
 var getNext = (params, cb) => {
   $.ajax({
     type: 'post',
@@ -46,8 +45,11 @@ var getDetailLink = (wordName, cb) => {
   });
 }
 
+let finished = 0
+
 // loop
 var once = (params) => {
+  finished += 1
   getNext(params, (err, word) => {
     if(err) return console.log('get next err:', err)
 
@@ -55,7 +57,7 @@ var once = (params) => {
       if(err) return console.log('get detail link err:', err)
 
       result.id = word.id
-      console.log(word.name, 'OK')
+      console.log(finished, word.name, 'OK')
       once(result)
     })
   })

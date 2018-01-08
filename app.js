@@ -64,6 +64,6 @@ viviSyncController.start(true)
 zdicLinkSyncController.start(true)
 bishunSyncController.start(true)
 zdicSyncController.start(true)
-zdicCalligraphySyncController.start(true)
+// zdicCalligraphySyncController.start(true)
 
 module.exports = { app, server };
