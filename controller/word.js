@@ -36,13 +36,13 @@ class WordController extends SuperController {
     // check if uncleInfo empty
     item.uncleEmpty = true
     item.uncleInfo.forEach((part) => {
-      if(part.imgList > 0) item.uncleEmpty = false
+      if(part.imgList.length > 0) item.uncleEmpty = false
     })
 
     // check if zdicCalligraphy empty
     item.zdicCalligraphyEmpty = true
     item.zdicCalligraphyInfo.forEach((part) => {
-      if(part.imgList > 0) item.zdicCalligraphyEmpty = false
+      if(part.imgList.length > 0) item.zdicCalligraphyEmpty = false
     })
 
     return item
