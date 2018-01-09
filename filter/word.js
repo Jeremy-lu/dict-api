@@ -16,6 +16,7 @@ const attrConfigs = {
   zdicId: { type: 'string' },
   zdicInfo: { type: 'string' },
   zdicLink: { type: 'string' },
+  zdicCalligraphyLink: { type: 'string' },
   zdicCalligraphyInfo: { type: 'string' },
 };
 

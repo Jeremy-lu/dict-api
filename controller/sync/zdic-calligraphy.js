@@ -59,7 +59,12 @@ class ZdicCalligraphySync {
       delete this.runningItems[item.id]
 
       let nextItem = this.awaitList.shift()
-      if(nextItem) this.runOne(nextItem)
+      if(nextItem) {
+        let that = this
+        setTimeout(() => {
+          that.runOne(nextItem)
+        }, 2000)
+      }
 
       this.supplyAwait()
     })

@@ -263,7 +263,7 @@ module.exports = {
 
     if(!word.zdicCalligraphyLink) return cb(null, result)
 
-    async.eachLimit('zlkxc'.split(''), 2, (item, eachDone) => {
+    async.eachLimit('zlkxc'.split(''), 1, (item, eachDone) => {
       let uri = word.zdicCalligraphyLink.replace('/ks/', `/${item}s/`)
 
       c.queue([{
@@ -417,11 +417,11 @@ module.exports = {
   }
 }
 
-let word = {
-  name: '畔',
-  zdicCalligraphyLink: 'http://sf.zdic.net/sf/ks/0714/34e233b8eeddf2855398b6a4daa16c28.html'
-}
-
+// let word = {
+//   "name": "蛇",
+// "zdicCalligraphyLink": "http://sf.zdic.net/sf/ks/0611/fd7ff8912aed0928d5a9793c0eba1861.html"
+//   }
+//
 // module.exports.getZdicCalligraphyInfo(word, (err, result) => {
-//   console.log(err, result[0])
+//   console.log(err, result)
 // })
