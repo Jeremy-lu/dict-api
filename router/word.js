@@ -10,6 +10,10 @@ router.post('/', action('create'), (req, res, cb) => {
   cb([req.body])
 }, { needLogin: false })
 
+router.get('/search', action('search'), (req, res, cb) => {
+  cb([req.query]);
+});
+
 router.get('/', action('getPaginatorList'), (req, res, cb) => {
   cb([req.query, paginator.getReqBody(req)]);
 });

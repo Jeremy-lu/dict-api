@@ -20,6 +20,8 @@ class ZdicCalligraphySync {
   }
 
   start(isInit) {
+    // return this.supplyAwait()
+
     if(isInit) {
       wordModel.update({zdicCalligraphySyncStatus: 'syncing'}, {zdicCalligraphySyncStatus: 'sync'}, (err) => {
         if(err) console.log('start word sync job err: ', err)
@@ -63,7 +65,7 @@ class ZdicCalligraphySync {
         let that = this
         setTimeout(() => {
           that.runOne(nextItem)
-        }, 2000)
+        }, 5000)
       }
 
       this.supplyAwait()

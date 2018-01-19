@@ -3,6 +3,7 @@
 const attrConfigs = {
   name: { type: 'string', fuzzySearch: true },
   pinyin: { type: 'string', fuzzySearch: true },
+  descr: { type: 'string' },
   dynamicWrite: { type: 'string' },
   radical: { type: 'string' },
   strokeCount: { type: 'string' },

@@ -1,6 +1,7 @@
 'use strict';
 
 const SuperController = require('./super')
+const SqlBricks = require('sql-bricks')
 
 class WordController extends SuperController {
   constructor() {
@@ -9,6 +10,18 @@ class WordController extends SuperController {
     this.error = require('../error/word');
     this.filter = require('../filter/word');
     this.model = require('../model/word');
+  }
+
+  search(params, cb) {
+    let searchStr = params.searchStr
+    if(!searchStr) return cb(null, [])
+
+    let words = searchStr.split('')
+    let columns = ['id', 'name', 'pinyin', 'descr', 'radical']
+
+    this.model.find({columns, where: SqlBricks.in('name', words)}, (err, list) => {
+      cb(err, list)
+    })
   }
 
   formatOne(item) {

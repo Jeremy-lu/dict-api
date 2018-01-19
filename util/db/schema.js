@@ -19,6 +19,7 @@ schema.word = {
   columns: [
     { name: 'name', type: 'text' },
     { name: 'pinyin', type: 'text' },
+    { name: 'descr', type: 'text' },
     { name: 'radical', type: 'text' },
     { name: 'strokeCount', type: 'int' },
     { name: 'dynamicWrite', type: 'text' },
