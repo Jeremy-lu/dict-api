@@ -1,16 +1,19 @@
 'use strict'
 
-// 1. first append jquery
+// 1. open http://www.zdic.net/ from browser
+
+// 2. open console, and append jquery
 var el = document.createElement('script')
 el.src = 'http://demo.training.testbrother.net/js/jquery.min.js?_1512011634_'
 document.body.appendChild(el)
 
-// 2. submit and get next valid word from my own server
+// 3. submit and get next valid word from my own server
 var getNext = (params, cb) => {
   $.ajax({
     type: 'post',
     data: params,
-    url: 'http://local.vividict.cn/zdic-link/next',
+    // url: 'http://local.vividict.cn/zdic-link/next',
+    url: 'http://localhost:3006/zdic-link/next',
   }).done((res) => {
     if(res.code === 0) {
       cb(res.data)
@@ -25,18 +28,18 @@ var getNext = (params, cb) => {
 // get detail link from zdic server
 var getDetailLink = (wordName, cb) => {
   wordName = escape(wordName).toLocaleLowerCase()
-  let url = 'http://www.zdic.net/sousuo/ac/?q=' + wordName + '&tp=tp2&lb=hp'
+  var url = 'http://www.zdic.net/sousuo/ac/?q=' + wordName + '&tp=tp2&lb=hp'
 
   $.ajax({
     type: 'get',
     url: url,
   }).done((res) => {
-    let result = {}
+    var result = {}
 
-    let linkMatch = res.match(/<li><a href="(.*)" class=/)
+    var linkMatch = res.match(/<li><a href="(.*)" class=/)
     if(linkMatch) result.zdicLink = linkMatch[1]
 
-    let pinyinMatch = res.match(/'ef'>(.*)<\/span>/)
+    var pinyinMatch = res.match(/'ef'>(.*)<\/span>/)
     if(pinyinMatch) result.pinyin = pinyinMatch[1]
 
     cb(null, result)
@@ -45,7 +48,7 @@ var getDetailLink = (wordName, cb) => {
   });
 }
 
-let finished = 0
+var finished = 0
 
 // loop
 var once = (params) => {

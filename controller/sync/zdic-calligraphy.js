@@ -6,6 +6,8 @@ const SqlBricks = require('sql-bricks')
 const _ = require('lodash')
 require('colors')
 
+let pre = '[zdic calligraphy]'.green
+
 let parallelRunNum = 1
 let maxAwaitNum = 100
 let minAwaitNum = 20
@@ -24,7 +26,7 @@ class ZdicCalligraphySync {
 
     if(isInit) {
       wordModel.update({zdicCalligraphySyncStatus: 'syncing'}, {zdicCalligraphySyncStatus: 'sync'}, (err) => {
-        if(err) console.log('start word sync job err: ', err)
+        if(err) console.log(pre, 'start word sync job err: ', err)
 
         this.supplyAwait()
       })
@@ -53,9 +55,9 @@ class ZdicCalligraphySync {
     this.runningItems[item.id] = item
     this.currRunningNum += 1
 
-    console.log('starting sync word ' + item.name)
+    console.log(pre, 'starting sync word ' + item.name)
     this.syncOne(item, (err) => {
-      console.log(item.name, err ? err.toString().red : '✓ '.green)
+      console.log(pre, item.name, err ? err.toString().red : '✓ '.green)
 
       this.currRunningNum -= 1
       delete this.runningItems[item.id]
@@ -85,7 +87,7 @@ class ZdicCalligraphySync {
     // supply await list
     this.getSyncList(maxAwaitNum - this.awaitList.length, (err, data) => {
       if(err) {
-        console.log('get sync list err', err)
+        console.log(pre, 'get sync list err', err)
       } else {
         this.awaitList = this.awaitList.concat(data)
 
@@ -112,12 +114,14 @@ class ZdicCalligraphySync {
     let updateInfo = { zdicCalligraphySyncStatus: 'finished' }
 
     syncHelper.getZdicCalligraphyInfo(word, (err, result) => {
-      if(err) return cb(err)
+      if(err) {
+        console.log(err)
+      } else {
+        updateInfo.zdicCalligraphyInfo = JSON.stringify(result)
+      }
 
-      updateInfo.zdicCalligraphyInfo = JSON.stringify(result)
-
-      wordModel.updateById(word.id, updateInfo, () => {
-        cb()
+      wordModel.updateById(word.id, updateInfo, (updateErr) => {
+        cb(err || updateErr)
       })
     })
   }

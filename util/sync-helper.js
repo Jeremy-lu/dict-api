@@ -226,30 +226,80 @@ module.exports = {
   },
 
   getZdicInfo(word, cb) {
-    c.queue([{
-      uri: 'http://www.zdic.net' + word.zdicLink.replace('/js/', '/zy/'),
-      retries: 3,
-      retryTimeout: 10000,
-      callback: (err, res, done) => {
-        if(err) return cb(err)
+    if(!word.zdicLink) return cb(null, {})
 
-        let $ = res.$
+    let info = {}
+    let decode = (str) => {
+      if(!str) return str
 
-        let decode = (str) => {
-          return unescape(str.replace(/&#x/g, '%u').replace(/;/g, '').replace(/%uA0/g, ' '))
-        }
+      return unescape(str.replace(/&#x/g, '%u').replace(/;/g, '').replace(/%uA0/g, ' '))
+    }
 
-        // console.log(res.body)
-        let radical = decode($('.z_it2_jbs a').html())
-        let strokeCount = parseInt($('.z_it2_jzbh a').html())
-        let strokeOrder = decode($('#z_i_t2_bis').html())
-        let zdicCalligraphyLink = $('.hdsf a').attr('href')
+    async.parallel({
+      basicInfo(eachDone) {
+        c.queue([{
+          uri: 'http://www.zdic.net' + word.zdicLink.replace('/js/', '/zy/'),
+          retries: 3,
+          retryTimeout: 10000,
+          callback: (err, res, done) => {
+            if(err) {
+              eachDone(err)
+              done()
+              return
+            }
 
-        cb(null, { radical, strokeCount, strokeOrder, zdicCalligraphyLink })
+            let $ = res.$
 
-        done()
+            let decode = (str) => {
+              return unescape(str.replace(/&#x/g, '%u').replace(/;/g, '').replace(/%uA0/g, ' '))
+            }
+
+            // console.log(res.body)
+            let radical = decode($('.z_it2_jbs a').text())
+            let strokeCount = parseInt($('.z_it2_jzbh a').text())
+            let strokeOrder = decode($('#z_i_t2_bis').text())
+            let zdicCalligraphyLink = $('.hdsf a').attr('href')
+
+            _.merge(info, { radical, strokeCount, strokeOrder, zdicCalligraphyLink })
+
+            eachDone()
+            done()
+          }
+        }])
+      },
+
+      descrInfo(eachDone) {
+        c.queue([{
+          uri: 'http://www.zdic.net' + word.zdicLink.replace('/js/', '/sw/'),
+          retries: 3,
+          retryTimeout: 10000,
+          callback: (err, res, done) => {
+            if(err) {
+              eachDone(err)
+              done()
+              return
+            }
+
+            let $ = res.$
+
+            // console.log(res.body)
+            let elList = $('#swnr>p')
+            for(let i=elList.length-1; i>=0; i--) {
+              let el = elList[i]
+              if(el && $(el).text()) {
+                info.descr = decode($(el).text())
+                break
+              }
+            }
+
+            eachDone()
+            done()
+          }
+        }])
       }
-    }])
+    }, (err) => {
+      cb(err, info)
+    })
   },
 
   getZdicCalligraphyInfo(word, cb) {
@@ -419,9 +469,10 @@ module.exports = {
 
 // let word = {
 //   "name": "蛇",
-// "zdicCalligraphyLink": "http://sf.zdic.net/sf/ks/0611/fd7ff8912aed0928d5a9793c0eba1861.html"
-//   }
+//   zdicLink: '/z/18/js/5A77.htm',
+//   "zdicCalligraphyLink": "http://sf.zdic.net/sf/ks/0611/fd7ff8912aed0928d5a9793c0eba1861.html"
+// }
 //
-// module.exports.getZdicCalligraphyInfo(word, (err, result) => {
+// module.exports.getZdicInfo(word, (err, result) => {
 //   console.log(err, result)
 // })

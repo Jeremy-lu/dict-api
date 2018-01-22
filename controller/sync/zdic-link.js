@@ -5,6 +5,8 @@ const SqlBricks = require('sql-bricks')
 const _ = require('lodash')
 require('colors')
 
+let pre = '[zdic link]'.green
+
 let maxAwaitNum = 100
 let minAwaitNum = 20
 
@@ -20,7 +22,7 @@ class ZdicLinkSync {
   start(isInit) {
     if(isInit) {
       wordModel.update({zdicLinkSyncStatus: 'syncing'}, {zdicLinkSyncStatus: 'sync'}, (err) => {
-        if(err) console.log('start word sync job err: ', err)
+        if(err) console.log(pre, 'start word sync job err: ', err)
 
         this.supplyAwait()
       })
@@ -42,7 +44,7 @@ class ZdicLinkSync {
     // supply await list
     this.getSyncList(maxAwaitNum - this.awaitList.length, (err, data) => {
       if(err) {
-        console.log('get sync list err', err)
+        console.log(pre, 'get sync list err', err)
       } else {
         this.awaitList = this.awaitList.concat(data)
       }
