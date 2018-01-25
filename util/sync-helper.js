@@ -5,6 +5,8 @@ const cheerio = require('cheerio')
 const Crawler = require('crawler')
 const _ = require('lodash')
 const async = require('async')
+const fs = require('fs')
+const helper = require('../util/helper')
 let c = new Crawler()
 
 module.exports = {
@@ -358,6 +360,30 @@ module.exports = {
       }])
     }, () => {
       cb(null, result)
+    })
+  },
+
+  downloadImages(urlList, cb) {
+    let obj = []
+
+    async.eachLimit(urlList, 3, (url, done) => {
+      let filePath = '/data/dict/get/' + helper.generateUniqStr(16) + '.png'
+      request(url)
+        .on('error', (err) => {
+          console.log('#err', err.code)
+          done(err)
+        })
+        .pipe(fs.createWriteStream(filePath)
+          .on('close', () => {
+            obj.push({ url: url, filePath: filePath })
+            done()
+          }
+        )
+      )
+    }, (err) => {
+      if(err) return cb(err)
+
+      cb(null, obj)
     })
   },
 

@@ -51,6 +51,7 @@ app.get('/ping', (req, res) => {
 // config router
 app.use('/users', require('./router/user'));
 app.use('/words', require('./router/word'));
+app.use('/common', require('./router/common'));
 app.use('/zdic-link', require('./router/zdic-link'));
 
 

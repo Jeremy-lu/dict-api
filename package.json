@@ -20,7 +20,9 @@
     "request": "^2.79.0",
     "colors": "*",
     "debug": "^3.0.0",
-    "cheerio": "*"
+    "cheerio": "*",
+    "canvas": "1.6.9",
+    "merge-images": "^1.0.7"
   },
 
   "devDependencies": {
