@@ -9,7 +9,9 @@ const syncHelper = require('../util/sync-helper')
 
 module.exports = {
   mergeImage(params, cb) {
-    let width = 370
+    let width = 385
+    let margin = 50
+
     let urlList = params.urlList
 
     // first, download images
@@ -20,7 +22,7 @@ module.exports = {
       let imgList = urlList.map((url, index) => {
         return {
           src: _.find(result, { url: url }).filePath,
-          x: width * index,
+          x: width * index + margin,
           y: 0
         }
       })
@@ -29,16 +31,18 @@ module.exports = {
       imgList.unshift({ src: '/data/dict/merge/bg.jpg', x: 0, y: 0 })
 
       // last, merge
-      let options = { width: width*urlList.length, height: width, format: 'image/png', Canvas: Canvas }
+      let options = { width: width*urlList.length + margin*2, height: width, format: 'image/png', Canvas: Canvas }
       mergeImages(imgList, options).then((base64) => {
         base64 = base64.split(';base64,').pop();
 
         let relaPath = `merge/${helper.generateUniqStr(16)}.png`
         fs.writeFileSync(`/data/dict/${relaPath}`, base64, 'base64')
 
+        let url = `https://static.vividict.cn/${relaPath}`
+        // let url = `file:///data/dict/${relaPath}`
+
         // callback with merged image url
-        cb(null, `https://static.vividict.cn/${relaPath}`)
-        // cb(null, `file:///data/dict/${relaPath}`)
+        cb(null, url)
       })
     })
   }
