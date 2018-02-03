@@ -9,7 +9,7 @@ const syncHelper = require('../util/sync-helper')
 
 module.exports = {
   mergeImage(params, cb) {
-    let width = 385
+    let width = 380
     let margin = 50
 
     let urlList = params.urlList
@@ -40,6 +40,7 @@ module.exports = {
 
         let url = `https://static.vividict.cn/${relaPath}`
         // let url = `file:///data/dict/${relaPath}`
+        // console.log(url)
 
         // callback with merged image url
         cb(null, url)
