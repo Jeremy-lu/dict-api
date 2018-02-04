@@ -1,6 +1,6 @@
 'use strict'
 
-// 1. open http://www.zdic.net/ from browser
+// 1. open from browser: http://www.zdic.net/
 
 // 2. open console, and append jquery
 var el = document.createElement('script')

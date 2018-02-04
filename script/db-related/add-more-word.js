@@ -1,3 +1,5 @@
+'use strict'
+
 // continue add more word
 
 const dbHelper = require('../../util/db/helper')
@@ -8,8 +10,8 @@ const _ = require('lodash')
 const wordModel = require('../../model/word')
 
 let nameGroupList = [
-  // 20180121
-  '刘婷斌哈杏',
+  // '刘婷斌哈杏', // 20180121
+  // '菊查吗浏猴', // 20180204
 ]
 
 let nameList = []

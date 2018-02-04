@@ -38,9 +38,9 @@ module.exports = {
         let relaPath = `merge/${helper.generateUniqStr(16)}.png`
         fs.writeFileSync(`/data/dict/${relaPath}`, base64, 'base64')
 
-        let url = `https://static.vividict.cn/${relaPath}`
+        let url = `https://static.dict.jeremylu.cn/${relaPath}`
         // let url = `file:///data/dict/${relaPath}`
-        // console.log(url)
+        console.log(url)
 
         // callback with merged image url
         cb(null, url)
